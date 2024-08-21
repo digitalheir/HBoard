@@ -61,7 +61,7 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
     private fun createRows(baseKeys: MutableList<MutableList<KeyData>>): ArrayList<ArrayList<KeyParams>> {
         // add padding for number layouts in landscape mode (maybe do it some other way later)
         if (params.mId.isNumberLayout && params.mId.mElementId != KeyboardId.ELEMENT_NUMPAD
-                && context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            && context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             params.mLeftPadding = (params.mOccupiedWidth * 0.1f).toInt()
             params.mRightPadding = (params.mOccupiedWidth * 0.1f).toInt()
             params.mBaseWidth = params.mOccupiedWidth - params.mLeftPadding - params.mRightPadding
@@ -78,7 +78,7 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
         adjustBottomFunctionalRowAndBaseKeys(allFunctionalKeys, baseKeys)
 
         if (allFunctionalKeys.none { it.singleOrNull()?.isKeyPlaceholder() == true })
-            // add a placeholder so splitAt does what we really want
+        // add a placeholder so splitAt does what we really want
             allFunctionalKeys.add(0, mutableListOf(TextKeyData(type = KeyType.PLACEHOLDER)))
 
         val (functionalKeysTop, functionalKeysBottom) = allFunctionalKeys.splitAt { it.singleOrNull()?.isKeyPlaceholder() == true }
@@ -106,8 +106,8 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
 
             row.map { key ->
                 val extraFlags = if (key.label.length > 2 && key.label.codePointCount(0, key.label.length) > 2 && !isEmoji(key.label))
-                        Key.LABEL_FLAGS_AUTO_X_SCALE
-                    else 0
+                    Key.LABEL_FLAGS_AUTO_X_SCALE
+                else 0
                 if (DebugFlags.DEBUG_ENABLED)
                     Log.d(TAG, "adding key ${key.label}, ${key.code}")
                 key.toKeyParams(params, defaultLabelFlags or extraFlags)
@@ -194,7 +194,8 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
      *  does nothing if not isAlphaOrSymbolKeyboard or assumptions not met
      *  adds an empty row to baseKeys, to have a baseKey row for the bottom functional row
      */
-    private fun adjustBottomFunctionalRowAndBaseKeys(allFunctionalKeys: MutableList<MutableList<KeyData>>, baseKeys: MutableList<MutableList<KeyData>>) {
+    private fun adjustBottomFunctionalRowAndBaseKeys(
+        allFunctionalKeys: MutableList<MutableList<KeyData>>, baseKeys: MutableList<MutableList<KeyData>>) {
         val functionalKeysBottom = allFunctionalKeys.lastOrNull() ?: return
         if (!params.mId.isAlphaOrSymbolKeyboard || functionalKeysBottom.isEmpty() || functionalKeysBottom.any { it.isKeyPlaceholder() })
             return
@@ -208,7 +209,7 @@ class KeyboardParser(private val params: KeyboardParams, private val context: Co
                 { it.label == KeyLabel.PERIOD || it.groupId == KeyData.GROUP_PERIOD},
                 { baseKeys.last()[1].copy(newGroupId = 2, newType = baseKeys.last()[1].type ?: it.type) }
             )
-            baseKeys.removeLast()
+            baseKeys.removeLastOrNull()
         }
         // add zwnj key next to space if necessary
         val spaceIndex = functionalKeysBottom.indexOfFirst { it.label == KeyLabel.SPACE && it.width <= 0 } // width could be 0 or -1
